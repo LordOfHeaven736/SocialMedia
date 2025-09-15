@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feed</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <div class="logo">MySocial</div>
+        <ul class="nav-links">
+          <li><a href="profile.html">Profile</a></li>
+          <li><a href="messages.html">Messages</a></li>
+          <li><a href="notifications.html">Notifications</a></li>
+          <li><a href="settings.html">Settings</a></li>
+          <li><a href="index.html">Logout</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main style="display: flex">
+      <section style="flex: 3; padding: 1rem">
+        <h2>Create Post</h2>
+        <form>
+          <textarea placeholder="What's on your mind?"></textarea><br />
+          <input type="file" /><br />
+          <button type="submit">Post</button>
+        </form>
+
+        <div class="post">
+          <h3>@user1</h3>
+          <p>My first blog post 🎉</p>
+          <img src="public/images/sample1.jpg" alt="Post Image" />
+          <p>❤️ 12 Likes | 💬 3 Comments</p>
+        </div>
+
+        <div class="post">
+          <h3>@user2</h3>
+          <p>Enjoying the sunshine 🌞</p>
+          <img src="public/images/sample2.jpg" alt="Post Image" />
+          <p>❤️ 8 Likes | 💬 1 Comment</p>
+        </div>
+      </section>
+
+      <aside class="sidebar" style="flex: 1">
+        <h3>Trending</h3>
+        <p>#technology</p>
+        <p>#travel</p>
+        <p>#coding</p>
+      </aside>
+    </main>
+  </body>
+</html>
