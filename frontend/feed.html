@@ -1,55 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Feed</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header>
-      <nav class="navbar">
-        <div class="logo">MySocial</div>
-        <ul class="nav-links">
-          <li><a href="profile.html">Profile</a></li>
-          <li><a href="messages.html">Messages</a></li>
-          <li><a href="notifications.html">Notifications</a></li>
-          <li><a href="settings.html">Settings</a></li>
-          <li><a href="index.html">Logout</a></li>
-        </ul>
-      </nav>
-    </header>
 
-    <main style="display: flex">
-      <section style="flex: 3; padding: 1rem">
-        <h2>Create Post</h2>
-        <form>
-          <textarea placeholder="What's on your mind?"></textarea><br />
-          <input type="file" /><br />
-          <button type="submit">Post</button>
-        </form>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feed</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
 
-        <div class="post">
-          <h3>@user1</h3>
-          <p>My first blog post 🎉</p>
-          <img src="public/images/sample1.jpg" alt="Post Image" />
-          <p>❤️ 12 Likes | 💬 3 Comments</p>
-        </div>
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="logo" onclick="window.location.href='feed.html'" style="cursor:pointer;">
+        MySocial
+      </div>
+      <ul class="nav-links">
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="messages.html">Messages</a></li>
+        <li><a href="notifications.html">Notifications</a></li>
+        <li><a href="settings.html">Settings</a></li>
+        <li><a href="index.html">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
 
-        <div class="post">
-          <h3>@user2</h3>
-          <p>Enjoying the sunshine 🌞</p>
-          <img src="public/images/sample2.jpg" alt="Post Image" />
-          <p>❤️ 8 Likes | 💬 1 Comment</p>
-        </div>
-      </section>
+  <main style="display: flex">
+    <section style="flex: 3; padding: 1rem">
+      <h2>Create Post</h2>
+      <form id="postForm">
+        <textarea id="postText" placeholder="What's on your mind?" required></textarea><br />
+        <input type="file" id="postImage" accept="image/*" /><br />
+        <button type="submit">Post</button>
+      </form>
 
-      <aside class="sidebar" style="flex: 1">
-        <h3>Trending</h3>
-        <p>#technology</p>
-        <p>#travel</p>
-        <p>#coding</p>
-      </aside>
-    </main>
-  </body>
+      <h2>Feed</h2>
+      <div id="feed"></div>
+    </section>
+
+    <aside class="sidebar" style="flex: 1">
+      <h3>Trending</h3>
+      <p>#technology</p>
+      <p>#travel</p>
+      <p>#coding</p>
+    </aside>
+  </main>
+
+  <script>
+    const postForm = document.getElementById("postForm");
+    const postText = document.getElementById("postText");
+    const postImage = document.getElementById("postImage");
+    const feed = document.getElementById("feed");
+
+    function loadPosts() {
+      feed.innerHTML = "";
+      let posts = JSON.parse(localStorage.getItem("posts")) || [];
+
+      posts.reverse().forEach((post, index) => {
+        let div = document.createElement("div");
+        div.className = "post";
+        div.innerHTML = `
+          <h3>${post.user}</h3>
+          <p>${post.text}</p>
+          ${post.image ? `<img src="${post.image}" alt="Post Image"/>` : ""}
+          <p id="stats-${index}">❤️ ${post.likes} Likes | 💬 ${post.comments.length} Comments</p>
+          <div class="actions">
+            <button onclick="likePost(${posts.length - 1 - index})">❤️ Like</button>
+            <button onclick="toggleCommentBox(${index})">💬 Comment</button>
+          </div>
+          <div id="commentBox-${index}" style="display:none;">
+            <input type="text" id="commentInput-${index}" placeholder="Write a comment..." />
+            <button onclick="addComment(${posts.length - 1 - index}, ${index})">Post</button>
+          </div>
+          <div class="comments" id="comments-${index}">
+            ${post.comments.map(c => `<p><b>@${c.user}</b>: ${c.text}</p>`).join("")}
+          </div>
+        `;
+        feed.appendChild(div);
+      });
+    }
+
+    postForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      let text = postText.value;
+      let imageFile = postImage.files[0];
+
+      let reader = new FileReader();
+      reader.onloadend = function () {
+        let newPost = {
+          user: JSON.parse(localStorage.getItem("user"))?.username || "guest",
+          text,
+          image: imageFile ? reader.result : null,
+          likes: 0,
+          comments: []
+        };
+
+        let posts = JSON.parse(localStorage.getItem("posts")) || [];
+        posts.push(newPost);
+        localStorage.setItem("posts", JSON.stringify(posts));
+
+        postText.value = "";
+        postImage.value = "";
+        loadPosts();
+      };
+
+      if (imageFile) {
+        reader.readAsDataURL(imageFile);
+      } else {
+        reader.onloadend();
+      }
+    });
+
+    // Like post
+    function likePost(index) {
+      let posts = JSON.parse(localStorage.getItem("posts")) || [];
+      posts[index].likes++;
+      localStorage.setItem("posts", JSON.stringify(posts));
+      loadPosts();
+    }
+
+    // Toggle comment box
+    function toggleCommentBox(renderIndex) {
+      let box = document.querySelector(`#commentBox-${renderIndex}`);
+      if (box) {
+        box.style.display = box.style.display === "none" ? "block" : "none";
+      }
+    }
+
+    // Add comment
+    function addComment(index, renderIndex) {
+      let input = document.getElementById(`commentInput-${renderIndex}`);
+      let text = input.value.trim();
+      if (text === "") return;
+
+      let posts = JSON.parse(localStorage.getItem("posts")) || [];
+      let currentUser = JSON.parse(localStorage.getItem("user"))?.username || "guest";
+
+      posts[index].comments.push({ user: currentUser, text });
+      localStorage.setItem("posts", JSON.stringify(posts));
+
+      input.value = "";
+      loadPosts();
+    }
+
+    // Initial load
+    loadPosts();
+  </script>
+</body>
+
 </html>

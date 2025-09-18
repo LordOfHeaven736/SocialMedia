@@ -1,32 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Profile</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header>
-      <nav class="navbar">
-        <div class="logo">MySocial</div>
-        <ul class="nav-links">
-          <li><a href="feed.html">Feed</a></li>
-          <li><a href="index.html">Logout</a></li>
-        </ul>
-      </nav>
-    </header>
 
-    <main>
-      <h2>@user123</h2>
-      <img src="public/images/profile.jpg" alt="Profile Pic" width="120" />
-      <p>Bio: Web Developer | Blogger | Tech Lover</p>
-      <p>Followers: 120 | Following: 80</p>
-      <button>Edit Profile</button>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
 
-      <h3>My Posts</h3>
-      <div class="post">Post 1</div>
-      <div class="post">Post 2</div>
-    </main>
-  </body>
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="logo" onclick="window.location.href='feed.html'" style="cursor:pointer;">
+        MySocial
+      </div>
+
+      <ul class="nav-links">
+        <li><a href="feed.html">Feed</a></li>
+        <li><a href="index.html">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h2>@user123</h2>
+    <img src="public/images/profile.jpg" alt="Profile Pic" width="120" />
+    <p>Bio: Web Developer | Blogger | Tech Lover</p>
+    <p>Followers: 120 | Following: 80</p>
+    <button>Edit Profile</button>
+
+    <h3>My Posts</h3>
+    <div class="post">Post 1</div>
+    <div class="post">Post 2</div>
+  </main>
+</body>
+
 </html>

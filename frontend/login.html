@@ -1,29 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header>
-      <nav class="navbar">
-        <div class="logo">MySocial</div>
-        <ul class="nav-links">
-          <li><a href="signup.html">Signup</a></li>
-        </ul>
-      </nav>
-    </header>
 
-    <main class="form-container">
-      <h2>Login</h2>
-      <form>
-        <input type="email" placeholder="Email" required /><br />
-        <input type="password" placeholder="Password" required /><br />
-        <button type="submit">Login</button>
-      </form>
-      <p><a href="#">Forgot password?</a></p>
-    </main>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="logo">MySocial</div>
+      <ul class="nav-links">
+        <li><a href="signup.html">Signup</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="form-container">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="email" id="loginEmail" placeholder="Email" required /><br />
+      <input type="password" id="loginPassword" placeholder="Password" required /><br />
+      <button type="submit">Login</button>
+    </form>
+    <p id="loginMessage"></p>
+    <p><a href="#">Forgot password?</a></p>
+  </main>
+
+  <script>
+    const loginForm = document.getElementById("loginForm");
+    const loginMessage = document.getElementById("loginMessage");
+
+    loginForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      let email = document.getElementById("loginEmail").value;
+      let password = document.getElementById("loginPassword").value;
+
+      let storedUser = JSON.parse(localStorage.getItem("user"));
+
+      if (storedUser && email === storedUser.email && password === storedUser.password) {
+        loginMessage.style.color = "green";
+        loginMessage.textContent = `Welcome back, ${storedUser.username}! 🎉`;
+      } else {
+        loginMessage.style.color = "red";
+        loginMessage.textContent = "Invalid email or password!";
+      }
+
+      window.location.href = "feed.html";
+    });
+  </script>
+</body>
+
 </html>

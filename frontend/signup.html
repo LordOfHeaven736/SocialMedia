@@ -1,31 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Signup</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header>
-      <nav class="navbar">
-        <div class="logo">MySocial</div>
-        <ul class="nav-links">
-          <li><a href="login.html">Login</a></li>
-        </ul>
-      </nav>
-    </header>
 
-    <main class="form-container">
-      <h2>Create Account</h2>
-      <form>
-        <input type="text" placeholder="Username" required /><br />
-        <input type="email" placeholder="Email" required /><br />
-        <input type="password" placeholder="Password" required /><br />
-        <textarea placeholder="Bio"></textarea><br />
-        <input type="file" accept="image/*" /><br />
-        <button type="submit">Signup</button>
-      </form>
-    </main>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signup</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="logo">MySocial</div>
+      <ul class="nav-links">
+        <li><a href="login.html">Login</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="form-container">
+    <h2>Create Account</h2>
+    <form id="signupForm">
+      <input type="text" id="username" placeholder="Username" required /><br />
+      <input type="email" id="email" placeholder="Email" required /><br />
+      <input type="password" id="password" placeholder="Password" required /><br />
+      <textarea id="bio" placeholder="Bio"></textarea><br />
+      <button type="submit">Signup</button>
+    </form>
+    <p id="message"></p>
+  </main>
+
+  <script>
+    const signupForm = document.getElementById("signupForm");
+
+    signupForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      let username = document.getElementById("username").value;
+      let email = document.getElementById("email").value;
+      let password = document.getElementById("password").value;
+      let bio = document.getElementById("bio").value;
+
+      let user = {
+        username,
+        email,
+        password,
+        bio
+      };
+
+      // Store user data in localStorage
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // Redirect to login page after signup
+      alert("Signup successful! Redirecting to login...");
+      window.location.href = "login.html";
+    });
+  </script>
+
+</body>
+
 </html>
