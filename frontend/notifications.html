@@ -1,32 +1,778 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Notifications</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notifications - MySocial</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Header Styles */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #667eea;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .notification-badge {
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: -8px;
+            right: -8px;
+        }
+
+        /* Main Content */
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .notifications-container {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .notifications-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .notifications-header h2 {
+            font-size: 2.2rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .notification-icon {
+            width: 28px;
+            height: 28px;
+            fill: #667eea;
+        }
+
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            background: #f1f5f9;
+            padding: 0.25rem;
+            border-radius: 12px;
+        }
+
+        .filter-tab {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #64748b;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+        }
+
+        .filter-tab.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+
+        /* Notification List */
+        .notifications-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            border: 1px solid transparent;
+        }
+
+        .notification-item:hover {
+            background: #f8fafc;
+            border-color: #e2e8f0;
+            transform: translateX(4px);
+        }
+
+        .notification-item.unread {
+            background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
+            border-color: #bfdbfe;
+        }
+
+        .notification-item.unread::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 60%;
+            background: #667eea;
+            border-radius: 0 2px 2px 0;
+        }
+
+        .notification-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .notification-type-badge {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .notification-type-badge svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .notification-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notification-text {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-text .username {
+            font-weight: 600;
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .notification-text .username:hover {
+            text-decoration: underline;
+        }
+
+        .notification-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .notification-time {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .notification-item:hover .notification-actions {
+            opacity: 1;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            background: transparent;
+        }
+
+        .action-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .action-btn.delete:hover {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #6b7280;
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            fill: #d1d5db;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .notifications-container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            .notifications-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .filter-tabs {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .notification-item {
+                padding: 0.75rem;
+            }
+
+            .notification-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .action-buttons {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
-
 <body>
-  <header>
-    <nav class="navbar">
-      <div class="logo" onclick="window.location.href='feed.html'" style="cursor:pointer;">
-        MySocial
-      </div>
+    <header>
+        <nav class="navbar">
+            <div class="logo" onclick="window.location.href='feed.html'">
+                MySocial
+            </div>
+            <ul class="nav-links">
+                <li><a href="feed.html">Feed</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li><a href="settings.html">Settings</a></li>
+            </ul>
+        </nav>
+    </header>
 
-      <ul class="nav-links">
-        <li><a href="feed.html">Feed</a></li>
-      </ul>
-    </nav>
-  </header>
+    <main>
+        <div class="notifications-container">
+            <div class="notifications-header">
+                <h2>
+                    <svg class="notification-icon" viewBox="0 0 24 24">
+                        <path d="M12,2A2,2 0 0,1 14,4C14,4.74 13.6,5.39 13,5.73V7A7,7 0 0,1 20,14V16A1,1 0 0,1 19,17H5A1,1 0 0,1 4,16V14A7,7 0 0,1 11,7V5.73C10.4,5.39 10,4.74 10,4A2,2 0 0,1 12,2M19,17V18A2,2 0 0,1 17,20H7A2,2 0 0,1 5,18V17H19Z"/>
+                    </svg>
+                    Notifications
+                </h2>
+                
+                <div class="action-buttons">
+                    <div class="filter-tabs">
+                        <button class="filter-tab active" data-filter="all">All</button>
+                        <button class="filter-tab" data-filter="unread">Unread</button>
+                        <button class="filter-tab" data-filter="likes">Likes</button>
+                        <button class="filter-tab" data-filter="follows">Follows</button>
+                        <button class="filter-tab" data-filter="comments">Comments</button>
+                    </div>
+                    
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-secondary" id="markAllRead">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                            </svg>
+                            Mark All Read
+                        </button>
+                        <button class="btn btn-primary" id="refreshBtn">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-  <main>
-    <h2>Notifications</h2>
-    <div class="post">@user2 liked your post</div>
-    <div class="post">@user3 started following you</div>
-    <div class="post">@user4 commented: "Nice work!"</div>
-  </main>
+            <div class="notifications-list" id="notificationsList">
+                <!-- Notifications will be populated by JavaScript -->
+            </div>
+
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12,2A2,2 0 0,1 14,4C14,4.74 13.6,5.39 13,5.73V7A7,7 0 0,1 20,14V16A1,1 0 0,1 19,17H5A1,1 0 0,1 4,16V14A7,7 0 0,1 11,7V5.73C10.4,5.39 10,4.74 10,4A2,2 0 0,1 12,2M19,17V18A2,2 0 0,1 17,20H7A2,2 0 0,1 5,18V17H19Z"/>
+                </svg>
+                <h3>No notifications yet</h3>
+                <p>When you get notifications, they'll show up here.</p>
+            </div>
+
+            <div class="loading" id="loadingState" style="display: none;">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Sample notification data
+        const sampleNotifications = [
+            {
+                id: 1,
+                type: 'like',
+                user: 'sarah_j',
+                username: 'Sarah Johnson',
+                action: 'liked your post',
+                content: '"Beautiful sunset photo! 📸"',
+                time: '2 minutes ago',
+                unread: true,
+                avatar: 'SJ'
+            },
+            {
+                id: 2,
+                type: 'follow',
+                user: 'mike_dev',
+                username: 'Mike Developer',
+                action: 'started following you',
+                time: '15 minutes ago',
+                unread: true,
+                avatar: 'MD'
+            },
+            {
+                id: 3,
+                type: 'comment',
+                user: 'alex_photo',
+                username: 'Alex Photography',
+                action: 'commented on your post',
+                content: '"Amazing composition! What camera did you use?"',
+                time: '1 hour ago',
+                unread: false,
+                avatar: 'AP'
+            },
+            {
+                id: 4,
+                type: 'like',
+                user: 'emma_art',
+                username: 'Emma Artist',
+                action: 'liked your comment',
+                content: 'on Mike Developer\'s post',
+                time: '2 hours ago',
+                unread: false,
+                avatar: 'EA'
+            },
+            {
+                id: 5,
+                type: 'follow',
+                user: 'john_music',
+                username: 'John Musician',
+                action: 'started following you',
+                time: '1 day ago',
+                unread: false,
+                avatar: 'JM'
+            },
+            {
+                id: 6,
+                type: 'comment',
+                user: 'lisa_travel',
+                username: 'Lisa Travel',
+                action: 'commented on your post',
+                content: '"This place looks incredible! Adding to my bucket list 🌟"',
+                time: '2 days ago',
+                unread: false,
+                avatar: 'LT'
+            }
+        ];
+
+        let notifications = JSON.parse(localStorage.getItem('notifications')) || sampleNotifications;
+        let currentFilter = 'all';
+
+        // Get notification type icon
+        function getTypeIcon(type) {
+            const icons = {
+                like: '<path fill="#ef4444" d="M12,21.35L10.55,20.03C5.4,15.36 2,12.28 2,8.5 2,5.42 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.09C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.42 22,8.5C22,12.28 18.6,15.36 13.45,20.04L12,21.35Z"/>',
+                follow: '<path fill="#22c55e" d="M12,2A2,2 0 0,1 14,4A2,2 0 0,1 12,6A2,2 0 0,1 10,4A2,2 0 0,1 12,2M21,9V7L15,1L13.5,2.5L16.17,5.17C15.24,5.06 14.24,5 13.25,5C7.26,5 2.55,5.61 2.55,7.25V22H4.05V8.5C4.05,7.76 8.22,6.5 13.25,6.5C18.28,6.5 22.45,7.76 22.45,8.5V22H23.95V9H21Z"/>',
+                comment: '<path fill="#3b82f6" d="M9,22A1,1 0 0,1 8,21V18H4A2,2 0 0,1 2,16V4C2,2.89 2.9,2 4,2H20A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H13.9L10.2,21.71C10,21.9 9.75,22 9.5,22V22H9Z"/>'
+            };
+            return `<svg width="12" height="12" viewBox="0 0 24 24">${icons[type] || icons.comment}</svg>`;
+        }
+
+        // Render notifications
+        function renderNotifications() {
+            const notificationsList = document.getElementById('notificationsList');
+            const emptyState = document.getElementById('emptyState');
+            
+            let filteredNotifications = notifications;
+            
+            if (currentFilter !== 'all') {
+                if (currentFilter === 'unread') {
+                    filteredNotifications = notifications.filter(n => n.unread);
+                } else {
+                    filteredNotifications = notifications.filter(n => n.type === currentFilter);
+                }
+            }
+
+            if (filteredNotifications.length === 0) {
+                notificationsList.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            notificationsList.style.display = 'block';
+            emptyState.style.display = 'none';
+
+            notificationsList.innerHTML = filteredNotifications.map(notification => `
+                <div class="notification-item ${notification.unread ? 'unread' : ''}" data-id="${notification.id}">
+                    <div class="notification-avatar">
+                        ${notification.avatar}
+                        <div class="notification-type-badge">
+                            ${getTypeIcon(notification.type)}
+                        </div>
+                    </div>
+                    
+                    <div class="notification-content">
+                        <div class="notification-text">
+                            <a href="#" class="username">@${notification.user}</a>
+                            ${notification.action}
+                            ${notification.content ? `<span style="color: #6b7280; font-style: italic;">${notification.content}</span>` : ''}
+                        </div>
+                        
+                        <div class="notification-meta">
+                            <div class="notification-time">
+                                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.2,16.2L11,13V7H12.5V12.2L17,14.7L16.2,16.2Z"/>
+                                </svg>
+                                ${notification.time}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-actions">
+                        <button class="action-btn mark-read" title="${notification.unread ? 'Mark as read' : 'Mark as unread'}">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="${notification.unread ? 'M19,17H22V19H19V17M19,7H22V13H20V9H19V7M17,12L15,10L10.5,14.5L8.5,12.5L7,14L10.5,17.5L17,12Z' : 'M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M11,16.5L18,9.5L16.59,8.09L11,13.67L7.91,10.59L6.5,12L11,16.5Z'}"/>
+                            </svg>
+                        </button>
+                        <button class="action-btn delete" title="Delete notification">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add event listeners to action buttons
+            addNotificationEventListeners();
+        }
+
+        // Add event listeners to notification actions
+        function addNotificationEventListeners() {
+            document.querySelectorAll('.notification-item').forEach(item => {
+                const notificationId = parseInt(item.dataset.id);
+                
+                // Click on notification item to mark as read
+                item.addEventListener('click', (e) => {
+                    if (!e.target.closest('.notification-actions')) {
+                        markAsRead(notificationId);
+                    }
+                });
+
+                // Mark as read/unread button
+                const markReadBtn = item.querySelector('.mark-read');
+                if (markReadBtn) {
+                    markReadBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        toggleReadStatus(notificationId);
+                    });
+                }
+
+                // Delete button
+                const deleteBtn = item.querySelector('.delete');
+                if (deleteBtn) {
+                    deleteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        deleteNotification(notificationId);
+                    });
+                }
+            });
+        }
+
+        // Toggle read status
+        function toggleReadStatus(id) {
+            const notification = notifications.find(n => n.id === id);
+            if (notification) {
+                notification.unread = !notification.unread;
+                saveNotifications();
+                renderNotifications();
+            }
+        }
+
+        // Mark as read
+        function markAsRead(id) {
+            const notification = notifications.find(n => n.id === id);
+            if (notification && notification.unread) {
+                notification.unread = false;
+                saveNotifications();
+                renderNotifications();
+            }
+        }
+
+        // Delete notification
+        function deleteNotification(id) {
+            if (confirm('Are you sure you want to delete this notification?')) {
+                notifications = notifications.filter(n => n.id !== id);
+                saveNotifications();
+                renderNotifications();
+            }
+        }
+
+        // Mark all as read
+        function markAllAsRead() {
+            notifications.forEach(n => n.unread = false);
+            saveNotifications();
+            renderNotifications();
+        }
+
+        // Save notifications to localStorage
+        function saveNotifications() {
+            localStorage.setItem('notifications', JSON.stringify(notifications));
+        }
+
+        // Filter tabs functionality
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelector('.filter-tab.active').classList.remove('active');
+                tab.classList.add('active');
+                currentFilter = tab.dataset.filter;
+                renderNotifications();
+            });
+        });
+
+        // Mark all read button
+        document.getElementById('markAllRead').addEventListener('click', markAllAsRead);
+
+        // Refresh button
+        document.getElementById('refreshBtn').addEventListener('click', () => {
+            const loadingState = document.getElementById('loadingState');
+            const notificationsList = document.getElementById('notificationsList');
+            
+            loadingState.style.display = 'block';
+            notificationsList.style.display = 'none';
+            
+            // Simulate loading
+            setTimeout(() => {
+                loadingState.style.display = 'none';
+                renderNotifications();
+            }, 1000);
+        });
+
+        // Initial render
+        renderNotifications();
+
+        // Simulate real-time notifications (every 30 seconds)
+        setInterval(() => {
+            const newNotificationTypes = ['like', 'comment', 'follow'];
+            const randomType = newNotificationTypes[Math.floor(Math.random() * newNotificationTypes.length)];
+            const users = ['new_user', 'random_person', 'cool_user', 'awesome_person'];
+            const randomUser = users[Math.floor(Math.random() * users.length)];
+            
+            const newNotification = {
+                id: Date.now(),
+                type: randomType,
+                user: randomUser,
+                username: randomUser.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                action: randomType === 'like' ? 'liked your post' : 
+                       randomType === 'comment' ? 'commented on your post' : 
+                       'started following you',
+                content: randomType === 'comment' ? '"Great content!" : undefined,
+                time: 'Just now',
+                unread: true,
+                avatar: randomUser.slice(0, 2).toUpperCase()
+            };
+            
+            notifications.unshift(newNotification);
+            saveNotifications();
+            
+            if (currentFilter === 'all' || currentFilter === 'unread' || currentFilter === randomType) {
+                renderNotifications();
+            }
+        }, 30000);
+    </script>
 </body>
-
 </html>

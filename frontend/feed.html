@@ -1,151 +1,822 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Feed</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feed - MySocial</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Animated background elements */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="25" cy="25" r="2" fill="rgba(255,255,255,0.05)"/><circle cx="75" cy="75" r="1.5" fill="rgba(255,255,255,0.04)"/><circle cx="50" cy="10" r="1" fill="rgba(255,255,255,0.06)"/></svg>');
+            animation: float 25s infinite linear;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-50px, -50px) rotate(360deg); }
+        }
+
+        /* Header Styles */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem 0;
+        }
+
+        .navbar {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.7rem 1.3rem;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            font-size: 0.9rem;
+        }
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nav-links a:hover::before {
+            left: 100%;
+        }
+
+        .nav-links a:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Main Layout */
+        main {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-top: 6rem;
+            gap: 2rem;
+            min-height: 100vh;
+        }
+
+        /* Main Content Section */
+        section {
+            flex: 3;
+            padding: 2rem;
+        }
+
+        /* Create Post Form */
+        .create-post {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .create-post h2 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        #postText {
+            width: 100%;
+            min-height: 120px;
+            padding: 1rem 1.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            transition: all 0.3s ease;
+            outline: none;
+            margin-bottom: 1rem;
+        }
+
+        #postText:focus {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #postText::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        #postImage {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-upload-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            font-family: inherit;
+        }
+
+        .file-upload-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .post-btn {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            float: right;
+        }
+
+        .post-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Feed Section */
+        .feed-header {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            clear: both;
+            padding-top: 1rem;
+        }
+
+        /* Post Styles */
+        .post {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .post:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .post h3 {
+            color: #4ecdc4;
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+
+        .post p {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .post img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin: 1rem 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .post-stats {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            margin: 1rem 0;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .actions button {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .actions button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Comment Box */
+        .comment-box {
+            margin: 1rem 0;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .comment-box input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .comment-box input:focus {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .comment-box input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .comment-box button {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .comment-box button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Comments */
+        .comments {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comments p {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.8rem;
+            border-radius: 10px;
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .comments b {
+            color: #4ecdc4;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            flex: 1;
+            padding: 2rem 1rem;
+            position: sticky;
+            top: 6rem;
+            height: fit-content;
+        }
+
+        .trending-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .trending-card h3 {
+            color: white;
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .trending-card p {
+            color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.1);
+            padding: 0.8rem 1rem;
+            border-radius: 15px;
+            margin: 0.8rem 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .trending-card p:hover {
+            background: rgba(78, 205, 196, 0.2);
+            transform: translateX(5px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            main {
+                flex-direction: column;
+                padding-top: 5rem;
+            }
+
+            .sidebar {
+                position: static;
+                padding: 1rem;
+            }
+
+            .navbar {
+                padding: 0 1rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .nav-links a {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+
+            main {
+                padding-top: 8rem;
+                gap: 1rem;
+            }
+
+            section {
+                padding: 1rem;
+            }
+
+            .create-post, .post, .trending-card {
+                padding: 1.5rem;
+            }
+
+            .actions {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .comment-box {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .comment-box button {
+                align-self: flex-end;
+                width: fit-content;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 1.5rem;
+            }
+
+            .create-post, .post, .trending-card {
+                padding: 1rem;
+                border-radius: 15px;
+            }
+
+            .create-post h2, .feed-header {
+                font-size: 1.3rem;
+            }
+
+            #postText {
+                min-height: 100px;
+            }
+        }
+
+        /* Hide default br tags */
+        br {
+            display: none;
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </head>
-
 <body>
-  <header>
-    <nav class="navbar">
-      <div class="logo" onclick="window.location.href='feed.html'" style="cursor:pointer;">
-        MySocial
-      </div>
-      <ul class="nav-links">
-        <li><a href="profile.html">Profile</a></li>
-        <li><a href="messages.html">Messages</a></li>
-        <li><a href="notifications.html">Notifications</a></li>
-        <li><a href="settings.html">Settings</a></li>
-        <li><a href="index.html">Logout</a></li>
-      </ul>
-    </nav>
-  </header>
+    <header>
+        <nav class="navbar">
+            <div class="logo" onclick="window.location.href='feed.html'" style="cursor:pointer;">
+                MySocial
+            </div>
+            <ul class="nav-links">
+                <li><a href="profile.html">Profile</a></li>
+                <li><a href="messages.html">Messages</a></li>
+                <li><a href="notifications.html">Notifications</a></li>
+                <li><a href="settings.html">Settings</a></li>
+                <li><a href="index.html">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
 
-  <main style="display: flex">
-    <section style="flex: 3; padding: 1rem">
-      <h2>Create Post</h2>
-      <form id="postForm">
-        <textarea id="postText" placeholder="What's on your mind?" required></textarea><br />
-        <input type="file" id="postImage" accept="image/*" /><br />
-        <button type="submit">Post</button>
-      </form>
+    <main>
+        <section>
+            <div class="create-post">
+                <h2>Create Post</h2>
+                <form id="postForm">
+                    <textarea id="postText" placeholder="What's on your mind?" required></textarea>
+                    <div class="file-upload">
+                        <input type="file" id="postImage" accept="image/*" />
+                        <div class="file-upload-btn">📷 Add Photo</div>
+                    </div>
+                    <button type="submit" class="post-btn">Share Post</button>
+                </form>
+            </div>
 
-      <h2>Feed</h2>
-      <div id="feed"></div>
-    </section>
+            <h2 class="feed-header">Your Feed</h2>
+            <div id="feed"></div>
+        </section>
 
-    <aside class="sidebar" style="flex: 1">
-      <h3>Trending</h3>
-      <p>#technology</p>
-      <p>#travel</p>
-      <p>#coding</p>
-    </aside>
-  </main>
+        <aside class="sidebar">
+            <div class="trending-card">
+                <h3>Trending Topics</h3>
+                <p onclick="searchTag('technology')">#technology</p>
+                <p onclick="searchTag('travel')">#travel</p>
+                <p onclick="searchTag('coding')">#coding</p>
+                <p onclick="searchTag('design')">#design</p>
+                <p onclick="searchTag('photography')">#photography</p>
+            </div>
+        </aside>
+    </main>
 
-  <script>
-    const postForm = document.getElementById("postForm");
-    const postText = document.getElementById("postText");
-    const postImage = document.getElementById("postImage");
-    const feed = document.getElementById("feed");
+    <script>
+        const postForm = document.getElementById("postForm");
+        const postText = document.getElementById("postText");
+        const postImage = document.getElementById("postImage");
+        const feed = document.getElementById("feed");
+        const fileUploadBtn = document.querySelector(".file-upload-btn");
 
-    function loadPosts() {
-      feed.innerHTML = "";
-      let posts = JSON.parse(localStorage.getItem("posts")) || [];
+        // Update file upload button text when file is selected
+        postImage.addEventListener("change", function() {
+            if (this.files && this.files[0]) {
+                fileUploadBtn.textContent = `📷 ${this.files[0].name}`;
+            } else {
+                fileUploadBtn.textContent = "📷 Add Photo";
+            }
+        });
 
-      posts.reverse().forEach((post, index) => {
-        let div = document.createElement("div");
-        div.className = "post";
-        div.innerHTML = `
-          <h3>${post.user}</h3>
-          <p>${post.text}</p>
-          ${post.image ? `<img src="${post.image}" alt="Post Image"/>` : ""}
-          <p id="stats-${index}">❤️ ${post.likes} Likes | 💬 ${post.comments.length} Comments</p>
-          <div class="actions">
-            <button onclick="likePost(${posts.length - 1 - index})">❤️ Like</button>
-            <button onclick="toggleCommentBox(${index})">💬 Comment</button>
-          </div>
-          <div id="commentBox-${index}" style="display:none;">
-            <input type="text" id="commentInput-${index}" placeholder="Write a comment..." />
-            <button onclick="addComment(${posts.length - 1 - index}, ${index})">Post</button>
-          </div>
-          <div class="comments" id="comments-${index}">
-            ${post.comments.map(c => `<p><b>@${c.user}</b>: ${c.text}</p>`).join("")}
-          </div>
-        `;
-        feed.appendChild(div);
-      });
-    }
+        function loadPosts() {
+            feed.innerHTML = "";
+            let posts = JSON.parse(localStorage.getItem("posts")) || [];
 
-    postForm.addEventListener("submit", function (e) {
-      e.preventDefault();
+            if (posts.length === 0) {
+                feed.innerHTML = `
+                    <div class="post">
+                        <h3>Welcome to MySocial!</h3>
+                        <p>No posts yet. Be the first to share something amazing! 🌟</p>
+                    </div>
+                `;
+                return;
+            }
 
-      let text = postText.value;
-      let imageFile = postImage.files[0];
+            posts.reverse().forEach((post, index) => {
+                let div = document.createElement("div");
+                div.className = "post";
+                div.innerHTML = `
+                    <h3>@${post.user}</h3>
+                    <p>${post.text}</p>
+                    ${post.image ? `<img src="${post.image}" alt="Post Image" loading="lazy"/>` : ""}
+                    <div class="post-stats" id="stats-${index}">
+                        ❤️ ${post.likes} Likes | 💬 ${post.comments.length} Comments
+                    </div>
+                    <div class="actions">
+                        <button onclick="likePost(${posts.length - 1 - index})">❤️ Like</button>
+                        <button onclick="toggleCommentBox(${index})">💬 Comment</button>
+                    </div>
+                    <div class="comment-box" id="commentBox-${index}" style="display:none;">
+                        <input type="text" id="commentInput-${index}" placeholder="Write a comment..." />
+                        <button onclick="addComment(${posts.length - 1 - index}, ${index})">Post</button>
+                    </div>
+                    <div class="comments" id="comments-${index}">
+                        ${post.comments.map(c => `<p><b>@${c.user}</b>: ${c.text}</p>`).join("")}
+                    </div>
+                `;
+                feed.appendChild(div);
 
-      let reader = new FileReader();
-      reader.onloadend = function () {
-        let newPost = {
-          user: JSON.parse(localStorage.getItem("user"))?.username || "guest",
-          text,
-          image: imageFile ? reader.result : null,
-          likes: 0,
-          comments: []
-        };
+                // Add staggered animation delay
+                setTimeout(() => {
+                    div.style.opacity = "1";
+                    div.style.transform = "translateY(0)";
+                }, index * 100);
+            });
+        }
 
-        let posts = JSON.parse(localStorage.getItem("posts")) || [];
-        posts.push(newPost);
-        localStorage.setItem("posts", JSON.stringify(posts));
+        postForm.addEventListener("submit", function (e) {
+            e.preventDefault();
 
-        postText.value = "";
-        postImage.value = "";
+            let text = postText.value.trim();
+            if (!text) return;
+
+            let imageFile = postImage.files[0];
+            const submitBtn = postForm.querySelector('.post-btn');
+            const originalText = submitBtn.textContent;
+            
+            // Show loading state
+            submitBtn.innerHTML = '<div class="loading"></div> Posting...';
+            submitBtn.disabled = true;
+
+            let reader = new FileReader();
+            reader.onloadend = function () {
+                setTimeout(() => { // Add slight delay for better UX
+                    let newPost = {
+                        user: JSON.parse(localStorage.getItem("user"))?.username || "guest",
+                        text,
+                        image: imageFile ? reader.result : null,
+                        likes: 0,
+                        comments: [],
+                        timestamp: new Date().toISOString()
+                    };
+
+                    let posts = JSON.parse(localStorage.getItem("posts")) || [];
+                    posts.push(newPost);
+                    localStorage.setItem("posts", JSON.stringify(posts));
+
+                    postText.value = "";
+                    postImage.value = "";
+                    fileUploadBtn.textContent = "📷 Add Photo";
+                    
+                    // Reset button
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                    
+                    loadPosts();
+                    
+                    // Success animation
+                    const createPost = document.querySelector('.create-post');
+                    createPost.style.transform = 'scale(1.02)';
+                    setTimeout(() => {
+                        createPost.style.transform = 'scale(1)';
+                    }, 200);
+                }, 800);
+            };
+
+            if (imageFile) {
+                reader.readAsDataURL(imageFile);
+            } else {
+                reader.onloadend();
+            }
+        });
+
+        // Like post with animation
+        function likePost(index) {
+            let posts = JSON.parse(localStorage.getItem("posts")) || [];
+            posts[index].likes++;
+            localStorage.setItem("posts", JSON.stringify(posts));
+            
+            // Update stats with animation
+            const statsEl = document.querySelector(`#stats-${posts.length - 1 - index}`);
+            if (statsEl) {
+                statsEl.style.transform = 'scale(1.1)';
+                statsEl.style.color = '#ff6b6b';
+                setTimeout(() => {
+                    statsEl.style.transform = 'scale(1)';
+                    statsEl.style.color = '';
+                }, 300);
+            }
+            
+            loadPosts();
+        }
+
+        // Toggle comment box with smooth animation
+        function toggleCommentBox(renderIndex) {
+            let box = document.querySelector(`#commentBox-${renderIndex}`);
+            if (box) {
+                if (box.style.display === "none" || !box.style.display) {
+                    box.style.display = "flex";
+                    box.style.opacity = "0";
+                    box.style.transform = "translateY(-10px)";
+                    setTimeout(() => {
+                        box.style.opacity = "1";
+                        box.style.transform = "translateY(0)";
+                        box.querySelector('input').focus();
+                    }, 50);
+                } else {
+                    box.style.opacity = "0";
+                    box.style.transform = "translateY(-10px)";
+                    setTimeout(() => {
+                        box.style.display = "none";
+                    }, 300);
+                }
+            }
+        }
+
+        // Add comment with Enter key support
+        function addComment(index, renderIndex) {
+            let input = document.getElementById(`commentInput-${renderIndex}`);
+            let text = input.value.trim();
+            if (text === "") return;
+
+            let posts = JSON.parse(localStorage.getItem("posts")) || [];
+            let currentUser = JSON.parse(localStorage.getItem("user"))?.username || "guest";
+
+            posts[index].comments.push({ user: currentUser, text, timestamp: new Date().toISOString() });
+            localStorage.setItem("posts", JSON.stringify(posts));
+
+            input.value = "";
+            loadPosts();
+        }
+
+        // Add Enter key support for comments
+        document.addEventListener('keypress', function(e) {
+            if (e.target.id && e.target.id.startsWith('commentInput-') && e.key === 'Enter') {
+                const renderIndex = e.target.id.split('-')[1];
+                const posts = JSON.parse(localStorage.getItem("posts")) || [];
+                const index = posts.length - 1 - parseInt(renderIndex);
+                addComment(index, parseInt(renderIndex));
+            }
+        });
+
+        // Search functionality for trending tags
+        function searchTag(tag) {
+            const posts = document.querySelectorAll('.post p');
+            posts.forEach(post => {
+                const parent = post.closest('.post');
+                if (post.textContent.toLowerCase().includes(tag.toLowerCase())) {
+                    parent.style.border = '2px solid #4ecdc4';
+                    parent.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(() => {
+                        parent.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                    }, 3000);
+                }
+            });
+        }
+
+        // Auto-resize textarea
+        postText.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.max(120, this.scrollHeight) + 'px';
+        });
+
+        // Initial load
         loadPosts();
-      };
 
-      if (imageFile) {
-        reader.readAsDataURL(imageFile);
-      } else {
-        reader.onloadend();
-      }
-    });
-
-    // Like post
-    function likePost(index) {
-      let posts = JSON.parse(localStorage.getItem("posts")) || [];
-      posts[index].likes++;
-      localStorage.setItem("posts", JSON.stringify(posts));
-      loadPosts();
-    }
-
-    // Toggle comment box
-    function toggleCommentBox(renderIndex) {
-      let box = document.querySelector(`#commentBox-${renderIndex}`);
-      if (box) {
-        box.style.display = box.style.display === "none" ? "block" : "none";
-      }
-    }
-
-    // Add comment
-    function addComment(index, renderIndex) {
-      let input = document.getElementById(`commentInput-${renderIndex}`);
-      let text = input.value.trim();
-      if (text === "") return;
-
-      let posts = JSON.parse(localStorage.getItem("posts")) || [];
-      let currentUser = JSON.parse(localStorage.getItem("user"))?.username || "guest";
-
-      posts[index].comments.push({ user: currentUser, text });
-      localStorage.setItem("posts", JSON.stringify(posts));
-
-      input.value = "";
-      loadPosts();
-    }
-
-    // Initial load
-    loadPosts();
-  </script>
+        // Add welcome animation on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('.create-post, .trending-card');
+            elements.forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
 </body>
-
 </html>
