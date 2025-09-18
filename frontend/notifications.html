@@ -1,26 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Notifications</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header>
-      <nav class="navbar">
-        <div class="logo">MySocial</div>
-        <ul class="nav-links">
-          <li><a href="feed.html">Feed</a></li>
-        </ul>
-      </nav>
-    </header>
 
-    <main>
-      <h2>Notifications</h2>
-      <div class="post">@user2 liked your post</div>
-      <div class="post">@user3 started following you</div>
-      <div class="post">@user4 commented: "Nice work!"</div>
-    </main>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notifications</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="logo" onclick="window.location.href='feed.html'" style="cursor:pointer;">
+        MySocial
+      </div>
+
+      <ul class="nav-links">
+        <li><a href="feed.html">Feed</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Notifications</h2>
+    <div class="post">@user2 liked your post</div>
+    <div class="post">@user3 started following you</div>
+    <div class="post">@user4 commented: "Nice work!"</div>
+  </main>
+</body>
+
 </html>

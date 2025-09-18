@@ -17,6 +17,7 @@ body {
   color: #fff;
   font-size: 1.2rem;
   font-weight: bold;
+  padding-left: 2.2rem;
 }
 
 .nav-links {
@@ -53,7 +54,8 @@ textarea {
 }
 
 button {
-  padding: 0.7rem 1.5rem;
+  padding: 0.7rem;
+  margin: 0.5rem;
   background: #333;
   color: white;
   border: none;
@@ -73,7 +75,7 @@ button:hover {
 }
 
 .post img {
-  max-width: 100%;
+  max-width: 25%;
   border-radius: 8px;
 }
 
@@ -82,4 +84,34 @@ button:hover {
   padding: 1rem;
   margin: 1rem;
   border-radius: 8px;
+}
+
+.actions {
+  margin-top: 0.5rem;
+}
+
+.actions button {
+  margin-right: 0.5rem;
+  cursor: pointer;
+}
+
+.comments {
+  margin-top: 0.5rem;
+  padding-left: 1rem;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+#feed {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  /* 2 posts per row */
+  gap: 1rem;
+}
+
+.post {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  border-radius: 8px;
+  background: #fafafa;
 }

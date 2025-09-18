@@ -1,39 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Messages</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header>
-      <nav class="navbar">
-        <div class="logo">MySocial</div>
-        <ul class="nav-links">
-          <li><a href="feed.html">Feed</a></li>
-        </ul>
-      </nav>
-    </header>
 
-    <main style="display: flex">
-      <aside class="sidebar" style="flex: 1">
-        <h3>Chats</h3>
-        <p>@user1</p>
-        <p>@user2</p>
-        <p>@user3</p>
-      </aside>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Messages</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .chat-box {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      height: 300px;
+      overflow-y: auto;
+      background: #fafafa;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
 
-      <section style="flex: 3; padding: 1rem">
-        <h3>Chat with @user1</h3>
-        <div class="post">Hi!</div>
-        <div class="post">Hello 😊</div>
+    .msg {
+      margin: 5px 0;
+      padding: 8px;
+      border-radius: 5px;
+      max-width: 60%;
+      clear: both;
+    }
 
-        <form>
-          <input type="text" placeholder="Type a message..." />
-          <button type="submit">Send</button>
-        </form>
-      </section>
-    </main>
-  </body>
+    .msg.sent {
+      background: #d1f7d6;
+      float: right;
+      text-align: right;
+    }
+
+    .msg.received {
+      background: #eee;
+      float: left;
+      text-align: left;
+    }
+
+    .chat-users p {
+      cursor: pointer;
+      margin: 5px 0;
+    }
+
+    .chat-users p:hover {
+      font-weight: bold;
+      color: #007bff;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="logo" onclick="window.location.href='feed.html'" style="cursor:pointer;">
+        MySocial
+      </div>
+      <ul class="nav-links">
+        <li><a href="feed.html">Feed</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main style="display: flex">
+    <aside class="sidebar chat-users" style="flex: 1; padding:1rem;">
+      <h3>Chats</h3>
+      <p onclick="openChat('user1')">John</p>
+      <p onclick="openChat('user2')">Alex</p>
+      <p onclick="openChat('user3')">Bob</p>
+    </aside>
+
+    <section style="flex: 3; padding: 1rem">
+      <h3 id="chatHeader">Select a user to chat</h3>
+      <div id="chatBox" class="chat-box"></div>
+
+      <form id="chatForm" style="display:none;">
+        <input type="text" id="chatInput" placeholder="Type a message..." required />
+        <button type="submit">Send</button>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    let currentChatUser = null;
+
+    // Load chats from localStorage
+    function loadChats() {
+      return JSON.parse(localStorage.getItem("chats")) || {};
+    }
+
+    // Save chats to localStorage
+    function saveChats(chats) {
+      localStorage.setItem("chats", JSON.stringify(chats));
+    }
+
+    // Open a chat
+    function openChat(user) {
+      currentChatUser = user;
+      document.getElementById("chatHeader").textContent = `Chat with @${user}`;
+      document.getElementById("chatForm").style.display = "flex";
+      renderMessages();
+    }
+
+    // Render messages
+    function renderMessages() {
+      let chats = loadChats();
+      let chatBox = document.getElementById("chatBox");
+      chatBox.innerHTML = "";
+
+      let messages = chats[currentChatUser] || [];
+      messages.forEach((msg) => {
+        let div = document.createElement("div");
+        div.className = `msg ${msg.type}`;
+        div.textContent = msg.text;
+        chatBox.appendChild(div);
+      });
+
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // Send a message
+    document.getElementById("chatForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      let input = document.getElementById("chatInput");
+      let text = input.value.trim();
+      if (!text) return;
+
+      let chats = loadChats();
+      if (!chats[currentChatUser]) chats[currentChatUser] = [];
+
+      // Add sent message
+      chats[currentChatUser].push({ text, type: "sent" });
+
+      saveChats(chats);
+      input.value = "";
+      renderMessages();
+
+      // Simulate reply after 1s
+      setTimeout(() => {
+        chats = loadChats();
+        chats[currentChatUser].push({ text: "Got it 👍", type: "received" });
+        saveChats(chats);
+        renderMessages();
+      }, 1000);
+    });
+  </script>
+</body>
+
 </html>
