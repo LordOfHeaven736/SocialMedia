@@ -1,35 +1,639 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Settings</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings - MySocial</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Header Styles */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #667eea;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Main Content */
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .settings-container {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .settings-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .settings-header h2 {
+            font-size: 2.2rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .settings-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        /* Settings Sections */
+        .settings-section {
+            margin-bottom: 2.5rem;
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .settings-section:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-icon {
+            width: 20px;
+            height: 20px;
+            fill: #667eea;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Toggle Switch */
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: #f9fafb;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .toggle-label {
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .toggle-description {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: #d1d5db;
+            border-radius: 13px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: #667eea;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 11px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(24px);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        /* Profile Picture Upload */
+        .profile-upload {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .profile-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .upload-btn {
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            background: #5a6fd8;
+        }
+
+        /* Success/Error Messages */
+        .message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            display: none;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .settings-container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .profile-upload {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
-
 <body>
-  <header>
-    <nav class="navbar">
-      <div class="logo" onclick="window.location.href='feed.html'" style="cursor:pointer;">
-        MySocial
-      </div>
+    <header>
+        <nav class="navbar">
+            <div class="logo" onclick="window.location.href='feed.html'">
+                MySocial
+            </div>
+            <ul class="nav-links">
+                <li><a href="feed.html">Feed</a></li>
+                <li><a href="profile.html">Profile</a></li>
+            </ul>
+        </nav>
+    </header>
 
-      <ul class="nav-links">
-        <li><a href="feed.html">Feed</a></li>
-      </ul>
-    </nav>
-  </header>
+    <main>
+        <div class="settings-container">
+            <div class="settings-header">
+                <h2>Account Settings</h2>
+                <p>Manage your account preferences and privacy settings</p>
+            </div>
 
-  <main>
-    <h2>Settings</h2>
-    <form>
-      <input type="password" placeholder="New Password" /><br />
-      <input type="email" placeholder="Change Email" /><br />
-      <label><input type="checkbox" /> Make profile private</label><br />
-      <button type="submit">Save Changes</button>
-    </form>
-  </main>
+            <div id="message" class="message"></div>
+
+            <form id="settingsForm">
+                <!-- Profile Section -->
+                <div class="settings-section">
+                    <h3 class="section-title">
+                        <svg class="section-icon" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                        Profile Information
+                    </h3>
+                    
+                    <div class="profile-upload">
+                        <div class="profile-preview" id="profilePreview">
+                            <svg width="40" height="40" fill="#9ca3af" viewBox="0 0 24 24">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <input type="file" id="profilePicture" accept="image/*" style="display: none;">
+                            <button type="button" class="upload-btn" onclick="document.getElementById('profilePicture').click()">
+                                Change Photo
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="displayName">Display Name</label>
+                        <input type="text" id="displayName" class="form-input" placeholder="Your display name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bio">Bio</label>
+                        <textarea id="bio" class="form-input textarea" placeholder="Tell us about yourself..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Account Security -->
+                <div class="settings-section">
+                    <h3 class="section-title">
+                        <svg class="section-icon" viewBox="0 0 24 24">
+                            <path d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z"/>
+                        </svg>
+                        Security
+                    </h3>
+
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" class="form-input" placeholder="your@email.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword" class="form-input" placeholder="Enter new password">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm new password">
+                    </div>
+                </div>
+
+                <!-- Privacy Settings -->
+                <div class="settings-section">
+                    <h3 class="section-title">
+                        <svg class="section-icon" viewBox="0 0 24 24">
+                            <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10V11.5C15.4,11.5 16,12.4 16,13V16C16,17.4 15.4,18 14.8,18H9.2C8.6,18 8,17.4 8,16V13C8,12.4 8.6,11.5 9.2,11.5V10C9.2,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.5,8.7 10.5,10V11.5H13.5V10C13.5,8.7 12.8,8.2 12,8.2Z"/>
+                        </svg>
+                        Privacy & Visibility
+                    </h3>
+
+                    <div class="toggle-group">
+                        <div>
+                            <div class="toggle-label">Private Profile</div>
+                            <div class="toggle-description">Only approved followers can see your posts</div>
+                        </div>
+                        <div class="toggle-switch" id="privateProfile">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+
+                    <div class="toggle-group">
+                        <div>
+                            <div class="toggle-label">Show Online Status</div>
+                            <div class="toggle-description">Let others see when you're active</div>
+                        </div>
+                        <div class="toggle-switch" id="onlineStatus">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+
+                    <div class="toggle-group">
+                        <div>
+                            <div class="toggle-label">Allow Message Requests</div>
+                            <div class="toggle-description">Receive messages from people you don't follow</div>
+                        </div>
+                        <div class="toggle-switch" id="messageRequests">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications -->
+                <div class="settings-section">
+                    <h3 class="section-title">
+                        <svg class="section-icon" viewBox="0 0 24 24">
+                            <path d="M12,2A2,2 0 0,1 14,4C14,4.74 13.6,5.39 13,5.73V7A7,7 0 0,1 20,14V16A1,1 0 0,1 19,17H5A1,1 0 0,1 4,16V14A7,7 0 0,1 11,7V5.73C10.4,5.39 10,4.74 10,4A2,2 0 0,1 12,2M19,17V18A2,2 0 0,1 17,20H7A2,2 0 0,1 5,18V17H19Z"/>
+                        </svg>
+                        Notifications
+                    </h3>
+
+                    <div class="toggle-group">
+                        <div>
+                            <div class="toggle-label">Email Notifications</div>
+                            <div class="toggle-description">Receive email updates about your account</div>
+                        </div>
+                        <div class="toggle-switch" id="emailNotifications">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+
+                    <div class="toggle-group">
+                        <div>
+                            <div class="toggle-label">Push Notifications</div>
+                            <div class="toggle-description">Get notified about likes, comments, and messages</div>
+                        </div>
+                        <div class="toggle-switch" id="pushNotifications">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                        </svg>
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+
+            <!-- Danger Zone -->
+            <div class="settings-section" style="border-color: #fecaca; margin-top: 2rem;">
+                <h3 class="section-title" style="color: #dc2626;">
+                    <svg class="section-icon" style="fill: #dc2626;" viewBox="0 0 24 24">
+                        <path d="M12,2C17.53,2 22,6.47 22,12C22,17.53 17.53,22 12,22C6.47,22 2,17.53 2,12C2,6.47 6.47,2 12,2M15.59,7L12,10.59L8.41,7L7,8.41L10.59,12L7,15.59L8.41,17L12,13.41L15.59,17L17,15.59L13.41,12L17,8.41L15.59,7Z"/>
+                    </svg>
+                    Danger Zone
+                </h3>
+                <p style="color: #6b7280; margin-bottom: 1rem;">Once you delete your account, there is no going back. Please be certain.</p>
+                <button type="button" class="btn btn-danger" id="deleteAccount">Delete Account</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Toggle Switch Functionality
+        document.querySelectorAll('.toggle-switch').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                toggle.classList.toggle('active');
+            });
+        });
+
+        // Profile Picture Preview
+        document.getElementById('profilePicture').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('profilePreview');
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Profile">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Form Submission
+        document.getElementById('settingsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = {
+                displayName: document.getElementById('displayName').value,
+                bio: document.getElementById('bio').value,
+                email: document.getElementById('email').value,
+                newPassword: document.getElementById('newPassword').value,
+                confirmPassword: document.getElementById('confirmPassword').value,
+                privateProfile: document.getElementById('privateProfile').classList.contains('active'),
+                onlineStatus: document.getElementById('onlineStatus').classList.contains('active'),
+                messageRequests: document.getElementById('messageRequests').classList.contains('active'),
+                emailNotifications: document.getElementById('emailNotifications').classList.contains('active'),
+                pushNotifications: document.getElementById('pushNotifications').classList.contains('active')
+            };
+
+            // Validate passwords match
+            if (formData.newPassword && formData.newPassword !== formData.confirmPassword) {
+                showMessage('Passwords do not match!', 'error');
+                return;
+            }
+
+            // Save to localStorage (in real app, send to server)
+            localStorage.setItem('userSettings', JSON.stringify(formData));
+            
+            showMessage('Settings saved successfully!', 'success');
+        });
+
+        // Cancel Button
+        document.getElementById('cancelBtn').addEventListener('click', function() {
+            if (confirm('Are you sure you want to cancel? All unsaved changes will be lost.')) {
+                location.reload();
+            }
+        });
+
+        // Delete Account
+        document.getElementById('deleteAccount').addEventListener('click', function() {
+            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                if (confirm('This will permanently delete all your data. Type "DELETE" to confirm.')) {
+                    localStorage.clear();
+                    alert('Account deleted. Redirecting to signup page.');
+                    window.location.href = 'signup.html';
+                }
+            }
+        });
+
+        // Show Message Function
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
+            messageEl.style.display = 'block';
+            
+            setTimeout(() => {
+                messageEl.style.display = 'none';
+            }, 5000);
+        }
+
+        // Load saved settings on page load
+        window.addEventListener('load', function() {
+            const savedSettings = JSON.parse(localStorage.getItem('userSettings') || '{}');
+            
+            if (savedSettings.displayName) document.getElementById('displayName').value = savedSettings.displayName;
+            if (savedSettings.bio) document.getElementById('bio').value = savedSettings.bio;
+            if (savedSettings.email) document.getElementById('email').value = savedSettings.email;
+            
+            // Set toggle states
+            if (savedSettings.privateProfile) document.getElementById('privateProfile').classList.add('active');
+            if (savedSettings.onlineStatus) document.getElementById('onlineStatus').classList.add('active');
+            if (savedSettings.messageRequests) document.getElementById('messageRequests').classList.add('active');
+            if (savedSettings.emailNotifications) document.getElementById('emailNotifications').classList.add('active');
+            if (savedSettings.pushNotifications) document.getElementById('pushNotifications').classList.add('active');
+        });
+    </script>
 </body>
-
 </html>
